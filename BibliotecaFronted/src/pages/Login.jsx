@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { MdMenuBook, MdEmail, MdLock } from "react-icons/md"
-import { login, saveToken } from "../services/auth"
+import { login, saveTokens } from "../services/auth"
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" })
@@ -26,8 +26,8 @@ export default function Login() {
 
     setLoading(true)
     try {
-      const res = await login({ email: form.email, password: form.password })
-      if (res.token) saveToken(res.token)
+      const res = await login({ emailOrUsername: form.email, password: form.password })
+      if (res.accessToken) saveTokens(res.accessToken, res.refreshToken)
       navigate("/")
     } catch (err) {
       setServerError(err.message || "Credenciales inválidas")

@@ -4,22 +4,32 @@ export function login(data) {
   return authApi.login(data)
 }
 
-export function register(data) {
-  return authApi.register(data)
+export function register(formData) {
+  return authApi.register(formData)
 }
 
-export function saveToken(token) {
-  localStorage.setItem("token", token)
+export function saveTokens(accessToken, refreshToken) {
+  localStorage.setItem("accessToken", accessToken)
+  localStorage.setItem("refreshToken", refreshToken)
 }
 
-export function getToken() {
-  return localStorage.getItem("token")
+export function getAccessToken() {
+  return localStorage.getItem("accessToken")
+}
+
+export function getRefreshToken() {
+  return localStorage.getItem("refreshToken")
 }
 
 export function logout() {
-  localStorage.removeItem("token")
+  const refreshToken = getRefreshToken()
+  localStorage.removeItem("accessToken")
+  localStorage.removeItem("refreshToken")
+  if (refreshToken) {
+    authApi.logout(refreshToken).catch(() => {})
+  }
 }
 
 export function isAuthenticated() {
-  return !!getToken()
+  return !!getAccessToken()
 }

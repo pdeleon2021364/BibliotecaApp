@@ -1,15 +1,16 @@
-const AUTH_URL = import.meta.env.VITE_AUTH_URL || "http://localhost:3000"
+const AUTH_URL = import.meta.env.VITE_AUTH_URL || "http://localhost:5156"
 const BOOKS_URL = import.meta.env.VITE_BOOKS_URL || "http://localhost:3001"
 const STATS_URL = import.meta.env.VITE_STATS_URL || "http://localhost:3002"
 
 function getToken() {
-  return localStorage.getItem("token")
+  return localStorage.getItem("accessToken")
 }
 
 async function request(url, path, options = {}) {
   const token = getToken()
-  const headers = { "Content-Type": "application/json", ...options.headers }
+  const headers = { ...options.headers }
   if (token) headers["Authorization"] = `Bearer ${token}`
+  if (!options.isFormData) headers["Content-Type"] = "application/json"
 
   const res = await fetch(`${url}${path}`, { ...options, headers })
   if (!res.ok) {
@@ -20,8 +21,9 @@ async function request(url, path, options = {}) {
 }
 
 export const authApi = {
-  login: (data) => request(AUTH_URL, "/auth/login", { method: "POST", body: JSON.stringify(data) }),
-  register: (data) => request(AUTH_URL, "/auth/register", { method: "POST", body: JSON.stringify(data) }),
+  login: (data) => request(AUTH_URL, "/api/v1/auth/login", { method: "POST", body: JSON.stringify(data) }),
+  register: (formData) => request(AUTH_URL, "/api/v1/auth/register", { method: "POST", body: formData, isFormData: true }),
+  logout: (refreshToken) => request(AUTH_URL, "/api/v1/auth/logout", { method: "POST", body: JSON.stringify({ refreshToken }) }),
 }
 
 export const booksApi = {
