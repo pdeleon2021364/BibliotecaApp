@@ -5,11 +5,11 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Gestión Bancaria API',
+      title: 'BibliotecaApp API',
       version: '1.0.0',
-      description: 'API completa para el sistema de gestión bancaria con Node.js, Express, MongoDB y PostgreSQL.',
+      description: 'API para el sistema de gestión bibliotecaria con Node.js, Express y MongoDB.',
       contact: {
-        name: 'GestionBancario Dev',
+        name: 'BibliotecaApp Dev',
       }
     },
     servers: [
@@ -29,29 +29,23 @@ const swaggerOptions = {
       }
     },
     tags: [
-      { name: 'Auth',              description: 'Autenticación y verificación de usuarios' },
+      { name: 'Auth',              description: 'Autenticación y registro de usuarios' },
       { name: 'Usuarios',          description: 'Gestión de usuarios del sistema' },
-      { name: 'Roles',             description: 'Gestión de roles y permisos' },
-      { name: 'BankAccount',       description: 'Cuentas bancarias' },
-      { name: 'Currency',          description: 'Divisas / Monedas' },
-      { name: 'ExchangeRate',      description: 'Tipos de cambio y conversión de divisas' },
-      { name: 'FinancialProduct',  description: 'Productos financieros' },
-      { name: 'Transactions',      description: 'Transacciones bancarias' },
-      { name: 'Record',            description: 'Historial de movimientos por cuenta' },
-      { name: 'Favorites',         description: 'Cuentas favoritas para transferencias' },
+      { name: 'Books',             description: 'Catálogo de libros de la biblioteca' },
+      { name: 'Loans',             description: 'Préstamos de libros' },
+      { name: 'Returns',           description: 'Devoluciones de libros' },
+      { name: 'Statistics',        description: 'Estadísticas e historial de lectura' },
+      { name: 'Recommendations',   description: 'Recomendaciones personalizadas' },
     ]
   },
   apis: [
     './src/fields/auth/*.js',
     './src/fields/Usuarios/*.js',
-    './src/fields/Roles/*.js',
-    './src/fields/bankAccount/*.js',
-    './src/fields/Currency/*.js',
-    './src/fields/ExchangeRate/*.js',
-    './src/fields/financialproduct/*.js',
-    './src/fields/transactions/*.js',
-    './src/fields/record/*.js',
-    './src/fields/favorites/*.js',
+    './src/fields/books/*.js',
+    './src/fields/loans/*.js',
+    './src/fields/returns/*.js',
+    './src/fields/statistics/*.js',
+    './src/fields/recommendations/*.js',
   ]
 };
 
@@ -65,7 +59,7 @@ export const setupSwagger = (app) => {
       .swagger-ui .info .title { font-size: 28px; font-weight: 700; color: #1a3c5e; }
       .swagger-ui .scheme-container { background: #f0f4f8; padding: 15px; border-radius: 8px; }
     `,
-    customSiteTitle: 'Gestión Bancaria API - Documentación',
+    customSiteTitle: 'BibliotecaApp API - Documentación',
     swaggerOptions: {
       persistAuthorization: true,
       displayRequestDuration: true
@@ -77,7 +71,7 @@ export const setupSwagger = (app) => {
     res.send(swaggerSpec);
   });
 
-  console.log(`📘 Swagger UI disponible en → http://localhost:${process.env.PORT || 3006}/api-docs`);
+  console.log(`Swagger UI disponible en → http://localhost:${process.env.PORT || 3006}/api-docs`);
 };
 
 export { swaggerSpec };

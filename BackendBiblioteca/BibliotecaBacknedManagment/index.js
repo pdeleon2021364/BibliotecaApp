@@ -12,5 +12,5 @@ process.on('unhandledRejection', (err, promise) => {
     process.exit(1);
 })
 
-console.log('Starting gestionbanco Server...');
+console.log('Starting Biblioteca Server...');
 initServer();
