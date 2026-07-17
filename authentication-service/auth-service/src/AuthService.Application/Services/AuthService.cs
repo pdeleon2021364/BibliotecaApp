@@ -144,6 +144,14 @@ public class AuthService(
             logger.LogError(ex, "Failed to send verification email");
         }
 
+        if (!emailSent)
+        {
+            createdUser.UserEmail.EmailVerified = true;
+            createdUser.Status = true;
+            await userRepository.UpdateAsync(createdUser);
+            logger.LogWarning("Auto-verified email for user {Username} because email sending failed", createdUser.Username);
+        }
+
         return new RegisterResponseDto
         {
             Success = true,
