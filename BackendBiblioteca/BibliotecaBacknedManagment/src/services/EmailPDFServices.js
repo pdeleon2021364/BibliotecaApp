@@ -64,7 +64,7 @@ export class EmailPDFService {
         doc.fillColor('#FFFFFF')
             .fontSize(22)
             .font('Helvetica-Bold')
-            .text('GESTIÓN BANCO', 50, 30);
+            .text('BIBLIOTECA APP', 50, 30);
 
         doc.fontSize(11)
             .font('Helvetica')
@@ -178,7 +178,7 @@ export class EmailPDFService {
             doc.fontSize(8)
                 .fillColor('#A6ACAF')
                 .text(
-                    `Documento generado automáticamente por Gestión Banco | Página ${i + 1} de ${pageCount}`,
+                    `Documento generado automáticamente por BibliotecaApp | Página ${i + 1} de ${pageCount}`,
                     50,
                     doc.page.height - 40,
                     { align: 'center' }
@@ -206,7 +206,7 @@ export class EmailPDFService {
         const pdfFilename = filename || `${entityName.toLowerCase()}_reporte.pdf`;
 
         await this.transporter.sendMail({
-            from: `"Gestión Banco" <${process.env.EMAIL_USER}>`,
+            from: `"BibliotecaApp" <${process.env.EMAIL_USER}>`,
             to: toEmail,
             subject,
             html: `
@@ -216,7 +216,7 @@ export class EmailPDFService {
         <!-- Header -->
         <div style="background-color:#2C3E50; padding:20px 30px;">
             <h1 style="margin:0; color:#ffffff; font-size:20px; font-weight:600;">
-                Gestión Banco
+                BibliotecaApp
             </h1>
             <p style="margin:5px 0 0; color:#dcdcdc; font-size:13px;">
                 Sistema de Reportes Automatizados
@@ -275,10 +275,10 @@ export class EmailPDFService {
         <!-- Footer -->
         <div style="background:#f1f1f1; padding:15px 30px; text-align:center;">
             <p style="margin:0; font-size:12px; color:#777777;">
-                Este mensaje fue generado automáticamente por el sistema Gestión Banco.
+                Este mensaje fue generado automáticamente por el sistema BibliotecaApp.
             </p>
             <p style="margin:5px 0 0; font-size:11px; color:#999999;">
-                © ${new Date().getFullYear()} Gestión Banco. Todos los derechos reservados.
+                © ${new Date().getFullYear()} BibliotecaApp. Todos los derechos reservados.
             </p>
         </div>
 

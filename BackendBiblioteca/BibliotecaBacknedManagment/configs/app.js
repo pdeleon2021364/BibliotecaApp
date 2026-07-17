@@ -1,30 +1,22 @@
-'use strict';
-
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import { dbConnection, connectPostgres, sequelize } from './db.js';
+import { dbConnection } from './db.js';
 import { corsOptions } from './cors-configuration.js';
 import { helmetConfiguration } from './helmet-configuration.js';
-
-//Importar Swagger 
 import { setupSwagger } from './swagger.js';
 
-import usuariosRoutes      from '../src/fields/Usuarios/usuarios.routes.js';
-import bankAccountRoutes   from '../src/fields/bankAccount/bankAccount_routes.js';
-import roleRoutes          from '../src/fields/Roles/role_routes.js';
-import currencyRoutes      from '../src/fields/Currency/Currency_routes.js';
-import exchangeRateRoutes  from '../src/fields/ExchangeRate/ExchangeRate_routes.js';
-import financialproduct    from '../src/fields/financialproduct/financialproduct_routes.js';
-import recordRoutes        from '../src/fields/record/record_routes.js';
-import transactionsRoutes  from '../src/fields/transactions/transactions_routes.js';
-import authRoutes          from '../src/fields/auth/auth_routes.js';
-import usersRoutes         from '../src/routes/users.routes.js';
-import favoritesRoutes     from '../src/fields/favorites/favorites_routes.js';
+import usuariosRoutes        from '../src/fields/Usuarios/usuarios.routes.js';
+import authRoutes            from '../src/fields/auth/auth_routes.js';
+import bookRoutes            from '../src/fields/books/book.routes.js';
+import loanRoutes            from '../src/fields/loans/loan.routes.js';
+import returnRoutes          from '../src/fields/returns/return.routes.js';
+import statisticsRoutes      from '../src/fields/statistics/userBookHistory.routes.js';
+import recommendationRoutes  from '../src/fields/recommendations/recommendation.routes.js';
 
-const BASE_PATH = '/gestionbanco/v1';
+const BASE_PATH = '/biblioteca/v1';
 
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false, limit: '10mb' }));
@@ -35,33 +27,28 @@ const middlewares = (app) => {
 };
 
 const routes = (app) => {
-    //Swagger Documentation
     setupSwagger(app);
 
-    app.use(`${BASE_PATH}/auth`,             usersRoutes);
-    app.use(`${BASE_PATH}/auth`,             authRoutes);
-    app.use(`${BASE_PATH}/Usuarios`,         usuariosRoutes);
-    app.use(`${BASE_PATH}/bankAccount`,      bankAccountRoutes);
-    app.use(`${BASE_PATH}/Roles`,            roleRoutes);
-    app.use(`${BASE_PATH}/Currency`,         currencyRoutes);
-    app.use(`${BASE_PATH}/ExchangeRate`,     exchangeRateRoutes);
-    app.use(`${BASE_PATH}/financialproduct`, financialproduct);
-    app.use(`${BASE_PATH}/record`,           recordRoutes);
-    app.use(`${BASE_PATH}/transactions`,     transactionsRoutes);
-    app.use(`${BASE_PATH}/favorites`,        favoritesRoutes);
+    app.use(`${BASE_PATH}/auth`,          authRoutes);
+    app.use(`${BASE_PATH}/Usuarios`,      usuariosRoutes);
+    app.use(`${BASE_PATH}/books`,         bookRoutes);
+    app.use(`${BASE_PATH}/loans`,         loanRoutes);
+    app.use(`${BASE_PATH}/returns`,       returnRoutes);
+    app.use(`${BASE_PATH}/statistics`,    statisticsRoutes);
+    app.use(`${BASE_PATH}/recommendations`, recommendationRoutes);
 
     app.get(`${BASE_PATH}/Health`, (req, res) => {
         res.status(200).json({
             status: 'Healthy',
             timestamp: new Date().toISOString(),
-            service: 'gestionbanco'
+            service: 'biblioteca'
         });
     });
 
     app.use((req, res) => {
         res.status(404).json({
             success: false,
-            message: 'Endpoint no encontrado en Admin API'
+            message: 'Endpoint no encontrado en Biblioteca API'
         });
     });
 };
@@ -73,8 +60,6 @@ export const createApp = async () => {
     app.set('trust proxy', 1);
 
     await dbConnection();
-    await connectPostgres();
-    await sequelize.sync({ alter: true });
     middlewares(app);
     routes(app);
 
@@ -87,7 +72,7 @@ export const initServer = async () => {
         const PORT = process.env.PORT || 3006;
 
         app.listen(PORT, () => {
-            console.log(`gestionbanco Server running on port ${PORT}`);
+            console.log(`Biblioteca Server running on port ${PORT}`);
             console.log(`Health check: http://localhost:${PORT}${BASE_PATH}/Health`);
         });
     } catch (error) {
