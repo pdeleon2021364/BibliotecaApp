@@ -1,4 +1,4 @@
-# GestionBancarioManagment - Perfil de Usuario con Foto
+BackendBiblioteca/BibliotecaBacknedManagment# GestionBancarioManagment - Perfil de Usuario con Foto
 
 Esta carpeta incluye la funcionalidad de registro de usuarios con foto de perfil opcional, edición de perfil y visualización de perfil protegido.
 
