@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © AuthDotnet 2024")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55c0234aba58e7509a6d784a8a1fa42545712e45")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60014e836802b55dbecc54858ee982a42f35213f")]
 [assembly: System.Reflection.AssemblyProductAttribute("AuthDotnet System")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AuthService.Persistence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

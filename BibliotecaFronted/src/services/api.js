@@ -3,7 +3,7 @@ const BOOKS_URL = import.meta.env.VITE_BOOKS_URL || "http://localhost:3006/bibli
 const STATS_URL = import.meta.env.VITE_STATS_URL || "http://localhost:3007/estadisticas/v1"
 
 function getToken() {
-  return localStorage.getItem("token")
+  return localStorage.getItem("accessToken")
 }
 
 async function request(url, path, options = {}) {
@@ -32,6 +32,7 @@ export const authApi = {
     if (data.phone) fd.append("phone", data.phone)
     return request(AUTH_URL, "/auth/register", { method: "POST", body: fd })
   },
+  logout: (refreshToken) => request(AUTH_URL, "/auth/logout", { method: "POST", body: JSON.stringify({ refreshToken }) }),
   getProfile: () => request(AUTH_URL, "/auth/profile"),
 }
 

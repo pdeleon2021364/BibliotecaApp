@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { MdMenuBook, MdPerson, MdEmail, MdLock } from "react-icons/md"
-import { register, saveToken } from "../services/auth"
+import { MdMenuBook, MdPerson, MdEmail, MdLock, MdPhone } from "react-icons/md"
+import { register } from "../services/auth"
 
 export default function Registro() {
-  const [form, setForm] = useState({ name: "", surname: "", username: "", email: "", password: "", confirmPassword: "" })
+  const [form, setForm] = useState({ nombre: "", apellido: "", username: "", email: "", phone: "", password: "", confirmPassword: "" })
   const [errors, setErrors] = useState({})
   const [serverError, setServerError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -12,13 +12,15 @@ export default function Registro() {
 
   const validate = () => {
     const errs = {}
-    if (!form.name.trim()) errs.name = "El nombre es obligatorio"
-    if (!form.surname.trim()) errs.surname = "El apellido es obligatorio"
+    if (!form.nombre.trim()) errs.nombre = "El nombre es obligatorio"
+    if (!form.apellido.trim()) errs.apellido = "El apellido es obligatorio"
     if (!form.username.trim()) errs.username = "El usuario es obligatorio"
     if (!form.email.trim()) errs.email = "El correo es obligatorio"
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Correo inválido"
+    if (!form.phone.trim()) errs.phone = "El teléfono es obligatorio"
+    else if (!/^\d{8}$/.test(form.phone)) errs.phone = "Debe ser 8 dígitos"
     if (!form.password) errs.password = "La contraseña es obligatoria"
-    else if (form.password.length < 6) errs.password = "Mínimo 6 caracteres"
+    else if (form.password.length < 8) errs.password = "Mínimo 8 caracteres"
     if (form.password !== form.confirmPassword) errs.confirmPassword = "Las contraseñas no coinciden"
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -31,9 +33,15 @@ export default function Registro() {
 
     setLoading(true)
     try {
-      const res = await register({ name: form.name, surname: form.surname, username: form.username, email: form.email, password: form.password })
-      if (res.accessToken) saveToken(res.accessToken)
-      navigate("/")
+      const fd = new FormData()
+      fd.append("name", form.nombre)
+      fd.append("surname", form.apellido)
+      fd.append("username", form.username)
+      fd.append("email", form.email)
+      fd.append("password", form.password)
+      fd.append("phone", form.phone)
+      await register(fd)
+      navigate("/login")
     } catch (err) {
       setServerError(err.message || "Error al registrar usuario")
     } finally {
@@ -42,7 +50,7 @@ export default function Registro() {
   }
 
   const fieldClass = (field) =>
-    `w-full px-4 py-2.5 rounded-lg border-2 bg-white text-madera-800 placeholder-madera-400 focus:outline-none focus:ring-2 transition-all text-sm ${
+    `w-full pl-10 pr-4 py-2.5 rounded-lg border-2 bg-white text-madera-800 placeholder-madera-400 focus:outline-none focus:ring-2 transition-all text-sm ${
       errors[field] ? "border-peligro-600 focus:border-peligro-600 focus:ring-peligro-100" : "border-madera-300 focus:border-bosque-500 focus:ring-bosque-100"
     }`
 
@@ -70,17 +78,17 @@ export default function Registro() {
                 <label className="block text-sm font-medium text-madera-700 mb-1.5">Nombre</label>
                 <div className="relative">
                   <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
-                  <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Juan" className={`${fieldClass("name")} pl-10`} />
+                  <input type="text" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Juan" className={`${fieldClass("nombre")} pl-10`} />
                 </div>
-                {errors.name && <p className="text-xs text-peligro-600 mt-1">{errors.name}</p>}
+                {errors.nombre && <p className="text-xs text-peligro-600 mt-1">{errors.nombre}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-madera-700 mb-1.5">Apellido</label>
                 <div className="relative">
                   <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
-                  <input type="text" value={form.surname} onChange={(e) => setForm({ ...form, surname: e.target.value })} placeholder="Pérez" className={`${fieldClass("surname")} pl-10`} />
+                  <input type="text" value={form.apellido} onChange={(e) => setForm({ ...form, apellido: e.target.value })} placeholder="Pérez" className={`${fieldClass("apellido")} pl-10`} />
                 </div>
-                {errors.surname && <p className="text-xs text-peligro-600 mt-1">{errors.surname}</p>}
+                {errors.apellido && <p className="text-xs text-peligro-600 mt-1">{errors.apellido}</p>}
               </div>
             </div>
 
@@ -103,10 +111,19 @@ export default function Registro() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium text-madera-700 mb-1.5">Teléfono</label>
+              <div className="relative">
+                <MdPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
+                <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="12345678" maxLength={8} className={`${fieldClass("phone")} pl-10`} />
+              </div>
+              {errors.phone && <p className="text-xs text-peligro-600 mt-1">{errors.phone}</p>}
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-madera-700 mb-1.5">Contraseña</label>
               <div className="relative">
                 <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
-                <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Mínimo 6 caracteres" className={`${fieldClass("password")} pl-10`} />
+                <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Mínimo 8 caracteres" className={`${fieldClass("password")} pl-10`} />
               </div>
               {errors.password && <p className="text-xs text-peligro-600 mt-1">{errors.password}</p>}
             </div>
