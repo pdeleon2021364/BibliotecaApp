@@ -89,7 +89,7 @@ export default function Libros() {
     setSaving(true)
     try {
       if (editingLibro) {
-        const updated = await updateBook(editingLibro.id, { ...form, year: Number(form.year) })
+        await updateBook(editingLibro.id, { ...form, year: Number(form.year) })
         setLibros(libros.map((l) => l.id === editingLibro.id ? { ...l, ...form, year: Number(form.year) } : l))
         toast("Libro actualizado correctamente", "success")
       } else {
@@ -113,8 +113,8 @@ export default function Libros() {
   }
 
   const fieldClass = (field) =>
-    `w-full px-4 py-2.5 rounded-lg border-2 bg-white text-madera-800 focus:outline-none focus:ring-2 transition-all text-sm ${
-      formErrors[field] ? "border-peligro-600 focus:border-peligro-600 focus:ring-peligro-100" : "border-madera-300 focus:border-bosque-500 focus:ring-bosque-100"
+    `w-full px-4 py-2.5 rounded-lg border border-madera-200 bg-white text-madera-800 focus:outline-none focus:ring-2 transition-all text-sm ${
+      formErrors[field] ? "border-peligro-600 focus:border-peligro-600 focus:ring-peligro-100" : "focus:border-madera-400 focus:ring-madera-200"
     }`
 
   const filteredLibros = libros.filter(
@@ -143,7 +143,7 @@ export default function Libros() {
       label: "Acciones",
       render: (_, row) => (
         <div className="flex items-center gap-2">
-          <button onClick={() => openEdit(row)} className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors cursor-pointer" title="Editar">
+          <button onClick={() => openEdit(row)} className="p-1.5 rounded-lg hover:bg-sky-50 text-sky-500 transition-colors cursor-pointer" title="Editar">
             <MdEdit className="text-lg" />
           </button>
           <button onClick={() => confirmDelete(row.id)} className="p-1.5 rounded-lg hover:bg-peligro-100 text-peligro-600 transition-colors cursor-pointer" title="Eliminar">
@@ -157,8 +157,8 @@ export default function Libros() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-display font-bold text-madera-900">Gestión de Libros</h1>
-        <p className="text-madera-500 mt-1">Administra el catálogo de la biblioteca</p>
+        <h1 className="text-2xl font-display font-bold text-madera-800">Gestión de Libros</h1>
+        <p className="text-madera-500 mt-1 text-sm">Administra el catálogo de la biblioteca</p>
       </div>
 
       <div className="flex items-center justify-between gap-4 flex-wrap">

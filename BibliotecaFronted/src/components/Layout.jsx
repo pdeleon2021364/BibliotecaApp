@@ -21,27 +21,26 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="bg-header h-16 flex items-center justify-between px-6 sticky top-0 z-40 shadow-warm">
+      <header className="bg-header h-16 flex items-center justify-between px-6 sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-madera-700 text-pergamino-100 transition-colors cursor-pointer"
+            className="md:hidden p-2 rounded-lg hover:bg-madera-700 text-madera-300 transition-colors cursor-pointer"
           >
             {sidebarOpen ? <MdClose className="text-xl" /> : <MdMenu className="text-xl" />}
           </button>
           <div className="flex items-center gap-2">
-            <MdMenuBook className="text-2xl text-bosque-500" />
-            <h1 className="text-xl font-display font-bold text-pergamino-50 tracking-wide">
+            <MdMenuBook className="text-2xl text-emerald-400" />
+            <h1 className="text-xl font-display font-bold text-white tracking-wide">
               BibliotecaApp
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-madera-300 hidden sm:block">Bibliotecario</span>
+          <span className="text-sm text-madera-400 hidden sm:block">Bibliotecario</span>
           <button
             onClick={handleLogout}
-            className="p-2 rounded-lg hover:bg-madera-700 text-madera-300 hover:text-pergamino-100 transition-colors cursor-pointer"
+            className="p-2 rounded-lg hover:bg-madera-700 text-madera-400 hover:text-white transition-colors cursor-pointer"
             title="Cerrar sesión"
           >
             <MdLogout className="text-lg" />
@@ -50,7 +49,6 @@ export default function Layout() {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
         <aside
           className={`
             bg-sidebar w-64 min-h-[calc(100vh-4rem)] sticky top-16
@@ -69,8 +67,8 @@ export default function Layout() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? "bg-madera-700 text-pergamino-50 shadow-warm-sm"
-                      : "text-madera-300 hover:bg-madera-700/50 hover:text-pergamino-100"
+                      ? "bg-white/10 text-white"
+                      : "text-madera-400 hover:bg-white/5 hover:text-white"
                   }`
                 }
                 end={to === "/"}
@@ -81,23 +79,21 @@ export default function Layout() {
             ))}
           </nav>
 
-          <div className="mt-auto mx-3 p-4 rounded-lg bg-madera-700/30 border border-madera-600/30">
-            <p className="text-xs text-madera-400 leading-relaxed">
+          <div className="mt-auto mx-3 p-4 rounded-lg bg-white/5 border border-white/10">
+            <p className="text-xs text-madera-500 leading-relaxed">
               Sistema de Gestión de Biblioteca v1.0
             </p>
           </div>
         </aside>
 
-        {/* Mobile overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 z-20 md:hidden top-16"
+            className="fixed inset-0 bg-black/30 z-20 md:hidden top-16"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Main content */}
-        <main className="flex-1 p-6 md:p-8 bg-pergamino-100 min-h-[calc(100vh-4rem)]">
+        <main className="flex-1 p-6 md:p-8 bg-madera-100 min-h-[calc(100vh-4rem)]">
           <Outlet />
         </main>
       </div>

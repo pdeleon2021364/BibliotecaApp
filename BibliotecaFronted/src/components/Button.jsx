@@ -1,9 +1,9 @@
 const variants = {
-  primary: "bg-madera-700 hover:bg-madera-600 text-pergamino-50",
+  primary: "bg-madera-800 hover:bg-madera-700 text-white",
   accent: "bg-bosque-700 hover:bg-bosque-600 text-white",
-  danger: "bg-peligro-600 hover:bg-red-700 text-white",
+  danger: "bg-peligro-600 hover:opacity-90 text-white",
   ghost: "bg-transparent hover:bg-madera-100 text-madera-700",
-  outline: "border-2 border-madera-400 text-madera-700 hover:bg-madera-100",
+  outline: "border border-madera-300 text-madera-700 hover:bg-madera-100",
 }
 
 export default function Button({ variant = "primary", icon: Icon, children, onClick, className = "", ...props }) {

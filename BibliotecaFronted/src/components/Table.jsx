@@ -1,11 +1,11 @@
 export default function Table({ columns, data }) {
   return (
-    <div className="overflow-x-auto rounded-xl border-wood shadow-warm-sm">
+    <div className="overflow-x-auto rounded-xl border border-madera-200 shadow-warm-sm">
       <table className="w-full">
         <thead>
-          <tr className="bg-madera-800 text-pergamino-100">
+          <tr className="bg-madera-800 text-white">
             {columns.map((col) => (
-              <th key={col.key} className="px-4 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+              <th key={col.key} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                 {col.label}
               </th>
             ))}
@@ -15,8 +15,8 @@ export default function Table({ columns, data }) {
           {data.map((row, index) => (
             <tr
               key={row.id}
-              className={`border-b border-madera-200 transition-colors hover:bg-madera-100/50 ${
-                index % 2 === 0 ? "bg-pergamino-50" : "bg-pergamino-100"
+              className={`border-b border-madera-100 transition-colors hover:bg-madera-100/60 ${
+                index % 2 === 0 ? "bg-white" : "bg-madera-100/30"
               }`}
             >
               {columns.map((col) => (

@@ -88,8 +88,8 @@ export default function Prestamos() {
   }
 
   const fieldClass = (field) =>
-    `w-full px-4 py-2.5 rounded-lg border-2 bg-white text-madera-800 focus:outline-none focus:ring-2 transition-all text-sm ${
-      formErrors[field] ? "border-peligro-600 focus:border-peligro-600 focus:ring-peligro-100" : "border-madera-300 focus:border-bosque-500 focus:ring-bosque-100"
+    `w-full px-4 py-2.5 rounded-lg border border-madera-200 bg-white text-madera-800 focus:outline-none focus:ring-2 transition-all text-sm ${
+      formErrors[field] ? "border-peligro-600 focus:border-peligro-600 focus:ring-peligro-100" : "focus:border-madera-400 focus:ring-madera-200"
     }`
 
   const badgeVariant = (estado) => {
@@ -123,7 +123,7 @@ export default function Prestamos() {
           {row.estado === "activo" && (
             <button
               onClick={() => handleDevolver(row.id)}
-              className="p-1.5 rounded-lg hover:bg-bosque-100 text-bosque-700 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-500 transition-colors cursor-pointer"
               title="Devolver"
             >
               <MdAssignmentReturn className="text-lg" />
@@ -137,8 +137,8 @@ export default function Prestamos() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-display font-bold text-madera-900">Gestión de Préstamos</h1>
-        <p className="text-madera-500 mt-1">Administra los préstamos de libros</p>
+        <h1 className="text-2xl font-display font-bold text-madera-800">Gestión de Préstamos</h1>
+        <p className="text-madera-500 mt-1 text-sm">Administra los préstamos de libros</p>
       </div>
 
       <div className="flex items-center justify-between gap-4 flex-wrap">

@@ -10,9 +10,9 @@ const icons = {
 }
 
 const styles = {
-  success: "bg-bosque-700 text-white",
+  success: "bg-madera-800 text-white",
   error: "bg-peligro-600 text-white",
-  info: "bg-madera-700 text-white",
+  info: "bg-madera-600 text-white",
 }
 
 export function useToast() {

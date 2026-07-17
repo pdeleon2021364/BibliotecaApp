@@ -1,17 +1,10 @@
 import Card from "./Card"
 
-const colorMap = {
-  madera: "bg-madera-600",
-  bosque: "bg-bosque-700",
-  maderaLight: "bg-madera-400",
-  maderaDark: "bg-madera-800",
-}
-
 const iconBgMap = {
-  madera: "bg-madera-100 text-madera-600",
-  bosque: "bg-bosque-100 text-bosque-700",
-  maderaLight: "bg-madera-100 text-madera-400",
-  maderaDark: "bg-madera-200 text-madera-800",
+  madera: "bg-amber-50 text-amber-600",
+  bosque: "bg-emerald-50 text-emerald-600",
+  maderaLight: "bg-sky-50 text-sky-500",
+  maderaDark: "bg-violet-50 text-violet-600",
 }
 
 export default function StatsCard({ title, value, icon: Icon, color = "madera" }) {
@@ -21,8 +14,8 @@ export default function StatsCard({ title, value, icon: Icon, color = "madera" }
         <Icon className="text-2xl" />
       </div>
       <div>
-        <p className="text-sm text-madera-500 font-medium">{title}</p>
-        <p className="text-2xl font-bold text-madera-900">{value}</p>
+        <p className="text-xs text-madera-500 font-medium uppercase tracking-wider">{title}</p>
+        <p className="text-2xl font-bold text-madera-800">{value}</p>
       </div>
     </Card>
   )

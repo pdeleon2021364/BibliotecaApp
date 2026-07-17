@@ -29,7 +29,7 @@ export default function Registro() {
 
     setLoading(true)
     try {
-      const res = await register({ nombre: form.nombre, email: form.email, password: form.password })
+      const res = await register({ nombre: form.nombre, correo: form.email, contrasena: form.password })
       if (res.token) saveToken(res.token)
       navigate("/")
     } catch (err) {
@@ -40,20 +40,20 @@ export default function Registro() {
   }
 
   const fieldClass = (field) =>
-    `w-full px-4 py-2.5 rounded-lg border-2 bg-white text-madera-800 placeholder-madera-400 focus:outline-none focus:ring-2 transition-all text-sm ${
-      errors[field] ? "border-peligro-600 focus:border-peligro-600 focus:ring-peligro-100" : "border-madera-300 focus:border-bosque-500 focus:ring-bosque-100"
+    `w-full px-4 py-2.5 rounded-lg border bg-white text-madera-800 placeholder-madera-400 focus:outline-none focus:ring-2 transition-all text-sm ${
+      errors[field] ? "border-peligro-600 focus:border-peligro-600 focus:ring-peligro-100" : "border-madera-200 focus:border-madera-400 focus:ring-madera-200"
     }`
 
   return (
     <div className="min-h-screen bg-login flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-pergamino-50 rounded-2xl shadow-warm border-2 border-madera-300 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-warm border border-madera-200 overflow-hidden">
           <div className="bg-madera-800 px-8 py-10 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-madera-700 mb-4 shadow-warm-sm">
-              <MdMenuBook className="text-4xl text-bosque-500" />
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-madera-700 mb-4">
+              <MdMenuBook className="text-4xl text-emerald-400" />
             </div>
-            <h1 className="text-3xl font-display font-bold text-pergamino-50 tracking-wide">Crear Cuenta</h1>
-            <p className="text-madera-300 text-sm mt-2">Regístrate para acceder al sistema</p>
+            <h1 className="text-2xl font-display font-bold text-white tracking-wide">Crear Cuenta</h1>
+            <p className="text-madera-400 text-sm mt-2">Regístrate para acceder al sistema</p>
           </div>
 
           <form onSubmit={handleSubmit} className="px-8 py-8 space-y-4">
@@ -66,7 +66,7 @@ export default function Registro() {
             <div>
               <label className="block text-sm font-medium text-madera-700 mb-1.5">Nombre completo</label>
               <div className="relative">
-                <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
+                <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 text-lg" />
                 <input
                   type="text"
                   value={form.nombre}
@@ -81,7 +81,7 @@ export default function Registro() {
             <div>
               <label className="block text-sm font-medium text-madera-700 mb-1.5">Correo electrónico</label>
               <div className="relative">
-                <MdEmail className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
+                <MdEmail className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 text-lg" />
                 <input
                   type="email"
                   value={form.email}
@@ -96,7 +96,7 @@ export default function Registro() {
             <div>
               <label className="block text-sm font-medium text-madera-700 mb-1.5">Contraseña</label>
               <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
+                <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 text-lg" />
                 <input
                   type="password"
                   value={form.password}
@@ -111,7 +111,7 @@ export default function Registro() {
             <div>
               <label className="block text-sm font-medium text-madera-700 mb-1.5">Confirmar contraseña</label>
               <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
+                <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 text-lg" />
                 <input
                   type="password"
                   value={form.confirmPassword}
@@ -126,14 +126,14 @@ export default function Registro() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-bosque-700 hover:bg-bosque-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all duration-200 shadow-warm-sm hover:shadow-warm cursor-pointer"
+              className="w-full py-3 rounded-lg bg-madera-800 hover:bg-madera-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm transition-all duration-200 cursor-pointer"
             >
               {loading ? "Creando cuenta..." : "Registrarse"}
             </button>
 
             <p className="text-center text-sm text-madera-500 mt-4">
               ¿Ya tienes cuenta?{" "}
-              <Link to="/login" className="text-bosque-700 font-semibold hover:text-bosque-600">
+              <Link to="/login" className="text-madera-800 font-medium hover:text-madera-600">
                 Iniciar Sesión
               </Link>
             </p>
