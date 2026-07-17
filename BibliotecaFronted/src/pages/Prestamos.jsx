@@ -8,9 +8,8 @@ import Badge from "../components/Badge"
 import Modal from "../components/Modal"
 import { SkeletonTable } from "../components/Skeleton"
 import { useToast } from "../components/Toast"
-import { createLoan, returnBook } from "../services/loans"
+import { getAllLoans, createLoan, returnBook } from "../services/loans"
 import { getBooks } from "../services/books"
-import { prestamos as initialPrestamos, libros as mockLibros } from "../data/mockData"
 
 export default function Prestamos() {
   const [search, setSearch] = useState("")
@@ -19,51 +18,54 @@ export default function Prestamos() {
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({ libro: "", usuario: "", fechaPrestamo: "", fechaDevolucion: "" })
+  const [form, setForm] = useState({ libroId: "", fechaDevolucionEstimada: "" })
   const [formErrors, setFormErrors] = useState({})
   const toast = useToast()
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      try {
-        const booksData = await getBooks()
-        setLibros(Array.isArray(booksData) ? booksData : booksData.libros || [])
-      } catch {
-        setLibros(mockLibros)
-      }
-      setPrestamos(initialPrestamos)
+  const loadData = async () => {
+    setLoading(true)
+    try {
+      const [loansRes, booksRes] = await Promise.all([
+        getAllLoans({ limit: 50 }),
+        getBooks({ limit: 100, disponible: "true" }),
+      ])
+      setPrestamos(loansRes.data || [])
+      setLibros(booksRes.data || [])
+    } catch (err) {
+      toast(err.message || "Error al cargar datos", "error")
+    } finally {
       setLoading(false)
     }
-    load()
-  }, [])
+  }
+
+  useEffect(() => { loadData() }, [])
 
   const validateForm = () => {
     const errs = {}
-    if (!form.libro) errs.libro = "Selecciona un libro"
-    if (!form.usuario.trim()) errs.usuario = "El nombre del usuario es obligatorio"
-    if (!form.fechaPrestamo) errs.fechaPrestamo = "Obligatorio"
-    if (!form.fechaDevolucion) errs.fechaDevolucion = "Obligatorio"
-    else if (form.fechaPrestamo && form.fechaDevolucion <= form.fechaPrestamo) errs.fechaDevolucion = "Debe ser posterior al préstamo"
+    if (!form.libroId) errs.libroId = "Selecciona un libro"
+    if (!form.fechaDevolucionEstimada) errs.fechaDevolucionEstimada = "Obligatorio"
     setFormErrors(errs)
     return Object.keys(errs).length === 0
   }
 
-  const filteredPrestamos = prestamos.filter(
-    (p) =>
-      p.libro?.toLowerCase().includes(search.toLowerCase()) ||
-      p.usuario?.toLowerCase().includes(search.toLowerCase()) ||
-      p.estado?.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredPrestamos = prestamos.filter((p) => {
+    const titulo = p.libroId?.titulo || ""
+    const usuario = p.usuarioId?.nombre || p.usuarioId?.username || ""
+    const estado = p.estado || ""
+    return (
+      titulo.toLowerCase().includes(search.toLowerCase()) ||
+      usuario.toLowerCase().includes(search.toLowerCase()) ||
+      estado.toLowerCase().includes(search.toLowerCase())
+    )
+  })
 
   const handleDevolver = async (id) => {
     try {
       await returnBook({ prestamoId: id })
-      setPrestamos(prestamos.map((p) => p.id === id ? { ...p, estado: "devuelto" } : p))
       toast("Devolución registrada correctamente", "success")
-    } catch {
-      setPrestamos(prestamos.map((p) => p.id === id ? { ...p, estado: "devuelto" } : p))
-      toast("Devolución registrada (modo demo)", "info")
+      await loadData()
+    } catch (err) {
+      toast(err.message || "Error al devolver", "error")
     }
   }
 
@@ -73,17 +75,16 @@ export default function Prestamos() {
 
     setSaving(true)
     try {
-      await createLoan(form)
-      setPrestamos([...prestamos, { id: Date.now(), ...form, estado: "activo" }])
+      await createLoan({ libroId: form.libroId, fechaDevolucionEstimada: form.fechaDevolucionEstimada })
       toast("Préstamo registrado correctamente", "success")
-    } catch {
-      setPrestamos([...prestamos, { id: Date.now(), ...form, estado: "activo" }])
-      toast("Préstamo registrado (modo demo)", "info")
+      await loadData()
+      setModalOpen(false)
+      setForm({ libroId: "", fechaDevolucionEstimada: "" })
+      setFormErrors({})
+    } catch (err) {
+      toast(err.message || "Error al crear préstamo", "error")
     } finally {
       setSaving(false)
-      setModalOpen(false)
-      setForm({ libro: "", usuario: "", fechaPrestamo: "", fechaDevolucion: "" })
-      setFormErrors({})
     }
   }
 
@@ -101,11 +102,32 @@ export default function Prestamos() {
     }
   }
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-"
+    return new Date(dateStr).toLocaleDateString("es-GT")
+  }
+
   const columns = [
-    { key: "libro", label: "Libro" },
-    { key: "usuario", label: "Usuario" },
-    { key: "fechaPrestamo", label: "Fecha Préstamo" },
-    { key: "fechaDevolucion", label: "Fecha Devolución" },
+    {
+      key: "libroId",
+      label: "Libro",
+      render: (val) => val?.titulo || "Libro eliminado",
+    },
+    {
+      key: "usuarioId",
+      label: "Usuario",
+      render: (val) => val?.nombre || val?.username || "N/A",
+    },
+    {
+      key: "fechaPrestamo",
+      label: "Fecha Préstamo",
+      render: (val) => formatDate(val),
+    },
+    {
+      key: "fechaDevolucionEstimada",
+      label: "Devolución Estimada",
+      render: (val) => formatDate(val),
+    },
     {
       key: "estado",
       label: "Estado",
@@ -122,7 +144,7 @@ export default function Prestamos() {
         <div className="flex items-center gap-2">
           {row.estado === "activo" && (
             <button
-              onClick={() => handleDevolver(row.id)}
+              onClick={() => handleDevolver(row._id || row.id)}
               className="p-1.5 rounded-lg hover:bg-bosque-100 text-bosque-700 transition-colors cursor-pointer"
               title="Devolver"
             >
@@ -158,36 +180,18 @@ export default function Prestamos() {
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-madera-700 mb-1">Libro</label>
-            <select value={form.libro} onChange={(e) => setForm({ ...form, libro: e.target.value })} className={fieldClass("libro")}>
+            <select value={form.libroId} onChange={(e) => setForm({ ...form, libroId: e.target.value })} className={fieldClass("libroId")}>
               <option value="">Seleccionar libro...</option>
-              {libros.filter((l) => l.estado === "disponible").map((l) => (
-                <option key={l.id} value={l.titulo}>{l.titulo}</option>
+              {libros.map((l) => (
+                <option key={l._id || l.id} value={l._id || l.id}>{l.titulo}</option>
               ))}
             </select>
-            {formErrors.libro && <p className="text-xs text-peligro-600 mt-1">{formErrors.libro}</p>}
+            {formErrors.libroId && <p className="text-xs text-peligro-600 mt-1">{formErrors.libroId}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-madera-700 mb-1">Usuario</label>
-            <input
-              type="text"
-              value={form.usuario}
-              onChange={(e) => setForm({ ...form, usuario: e.target.value })}
-              placeholder="Nombre del usuario"
-              className={fieldClass("usuario")}
-            />
-            {formErrors.usuario && <p className="text-xs text-peligro-600 mt-1">{formErrors.usuario}</p>}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-madera-700 mb-1">Fecha Préstamo</label>
-              <input type="date" value={form.fechaPrestamo} onChange={(e) => setForm({ ...form, fechaPrestamo: e.target.value })} className={fieldClass("fechaPrestamo")} />
-              {formErrors.fechaPrestamo && <p className="text-xs text-peligro-600 mt-1">{formErrors.fechaPrestamo}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-madera-700 mb-1">Fecha Devolución</label>
-              <input type="date" value={form.fechaDevolucion} onChange={(e) => setForm({ ...form, fechaDevolucion: e.target.value })} className={fieldClass("fechaDevolucion")} />
-              {formErrors.fechaDevolucion && <p className="text-xs text-peligro-600 mt-1">{formErrors.fechaDevolucion}</p>}
-            </div>
+            <label className="block text-sm font-medium text-madera-700 mb-1">Fecha de Devolución Estimada</label>
+            <input type="date" value={form.fechaDevolucionEstimada} onChange={(e) => setForm({ ...form, fechaDevolucionEstimada: e.target.value })} className={fieldClass("fechaDevolucionEstimada")} />
+            {formErrors.fechaDevolucionEstimada && <p className="text-xs text-peligro-600 mt-1">{formErrors.fechaDevolucionEstimada}</p>}
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)} type="button">Cancelar</Button>

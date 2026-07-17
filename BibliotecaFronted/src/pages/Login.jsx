@@ -4,7 +4,7 @@ import { MdMenuBook, MdEmail, MdLock } from "react-icons/md"
 import { login, saveToken } from "../services/auth"
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" })
+  const [form, setForm] = useState({ emailOrUsername: "", password: "" })
   const [errors, setErrors] = useState({})
   const [serverError, setServerError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -12,8 +12,7 @@ export default function Login() {
 
   const validate = () => {
     const errs = {}
-    if (!form.email.trim()) errs.email = "El correo es obligatorio"
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Correo inválido"
+    if (!form.emailOrUsername.trim()) errs.emailOrUsername = "El correo o usuario es obligatorio"
     if (!form.password) errs.password = "La contraseña es obligatoria"
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -26,8 +25,8 @@ export default function Login() {
 
     setLoading(true)
     try {
-      const res = await login({ email: form.email, password: form.password })
-      if (res.token) saveToken(res.token)
+      const res = await login({ emailOrUsername: form.emailOrUsername, password: form.password })
+      if (res.accessToken) saveToken(res.accessToken)
       navigate("/")
     } catch (err) {
       setServerError(err.message || "Credenciales inválidas")
@@ -61,18 +60,18 @@ export default function Login() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-madera-700 mb-1.5">Correo Electrónico</label>
+              <label className="block text-sm font-medium text-madera-700 mb-1.5">Correo o Usuario</label>
               <div className="relative">
                 <MdEmail className="absolute left-3 top-1/2 -translate-y-1/2 text-madera-400 text-lg" />
                 <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="correo@biblioteca.com"
-                  className={fieldClass("email")}
+                  type="text"
+                  value={form.emailOrUsername}
+                  onChange={(e) => setForm({ ...form, emailOrUsername: e.target.value })}
+                  placeholder="correo@biblioteca.com o usuario"
+                  className={fieldClass("emailOrUsername")}
                 />
               </div>
-              {errors.email && <p className="text-xs text-peligro-600 mt-1">{errors.email}</p>}
+              {errors.emailOrUsername && <p className="text-xs text-peligro-600 mt-1">{errors.emailOrUsername}</p>}
             </div>
 
             <div>

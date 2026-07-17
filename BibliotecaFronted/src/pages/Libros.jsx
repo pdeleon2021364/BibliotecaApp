@@ -10,9 +10,8 @@ import ConfirmDialog from "../components/ConfirmDialog"
 import { SkeletonTable } from "../components/Skeleton"
 import { useToast } from "../components/Toast"
 import { getBooks, createBook, updateBook, deleteBook } from "../services/books"
-import { libros as mockLibros } from "../data/mockData"
 
-const categorias = ["Novela", "Clásico", "Fábula", "Cuento"]
+const categorias = ["Novela", "Clásico", "Fábula", "Cuento", "Poesía", "Ensayo"]
 
 export default function Libros() {
   const [search, setSearch] = useState("")
@@ -22,7 +21,7 @@ export default function Libros() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleteId, setDeleteId] = useState(null)
   const [editingLibro, setEditingLibro] = useState(null)
-  const [form, setForm] = useState({ titulo: "", autor: "", categoria: "", isbn: "", year: "" })
+  const [form, setForm] = useState({ titulo: "", autor: "", categoria: "", anio: "", stock: "1" })
   const [formErrors, setFormErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const toast = useToast()
@@ -30,38 +29,44 @@ export default function Libros() {
   const fetchBooks = async () => {
     setLoading(true)
     try {
-      const data = await getBooks(search)
-      setLibros(Array.isArray(data) ? data : data.libros || [])
+      const res = await getBooks({ limit: 50 })
+      setLibros(res.data || [])
     } catch {
-      setLibros(mockLibros)
+      setLibros([])
+      toast("Error al cargar libros", "error")
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { fetchBooks() }, [search])
+  useEffect(() => { fetchBooks() }, [])
 
   const validateForm = () => {
     const errs = {}
     if (!form.titulo.trim()) errs.titulo = "Obligatorio"
     if (!form.autor.trim()) errs.autor = "Obligatorio"
     if (!form.categoria) errs.categoria = "Obligatorio"
-    if (!form.year || Number(form.year) < 1000 || Number(form.year) > 2030) errs.year = "Año inválido"
-    if (!form.isbn.trim()) errs.isbn = "Obligatorio"
+    if (!form.anio || Number(form.anio) < 1000 || Number(form.anio) > 2030) errs.anio = "Año inválido"
     setFormErrors(errs)
     return Object.keys(errs).length === 0
   }
 
   const openCreate = () => {
     setEditingLibro(null)
-    setForm({ titulo: "", autor: "", categoria: "", isbn: "", year: "" })
+    setForm({ titulo: "", autor: "", categoria: "", anio: "", stock: "1" })
     setFormErrors({})
     setModalOpen(true)
   }
 
   const openEdit = (libro) => {
     setEditingLibro(libro)
-    setForm({ titulo: libro.titulo, autor: libro.autor, categoria: libro.categoria, isbn: libro.isbn, year: String(libro.year) })
+    setForm({
+      titulo: libro.titulo || "",
+      autor: libro.autor || "",
+      categoria: libro.categoria || "",
+      anio: String(libro.anio || ""),
+      stock: String(libro.stock || 1),
+    })
     setFormErrors({})
     setModalOpen(true)
   }
@@ -74,11 +79,10 @@ export default function Libros() {
   const handleDelete = async () => {
     try {
       await deleteBook(deleteId)
-      setLibros(libros.filter((l) => l.id !== deleteId))
+      setLibros(libros.filter((l) => l._id !== deleteId && l.id !== deleteId))
       toast("Libro eliminado correctamente", "success")
-    } catch {
-      setLibros(libros.filter((l) => l.id !== deleteId))
-      toast("Libro eliminado (modo demo)", "info")
+    } catch (err) {
+      toast(err.message || "Error al eliminar", "error")
     }
   }
 
@@ -88,25 +92,18 @@ export default function Libros() {
 
     setSaving(true)
     try {
+      const payload = { titulo: form.titulo, autor: form.autor, categoria: form.categoria, anio: Number(form.anio), stock: Number(form.stock) }
       if (editingLibro) {
-        const updated = await updateBook(editingLibro.id, { ...form, year: Number(form.year) })
-        setLibros(libros.map((l) => l.id === editingLibro.id ? { ...l, ...form, year: Number(form.year) } : l))
+        const res = await updateBook(editingLibro._id || editingLibro.id, payload)
         toast("Libro actualizado correctamente", "success")
       } else {
-        const created = await createBook({ ...form, year: Number(form.year) })
-        const newLibro = created || { id: Date.now(), ...form, year: Number(form.year), estado: "disponible" }
-        setLibros([...libros, newLibro])
+        const res = await createBook(payload)
         toast("Libro agregado correctamente", "success")
       }
+      await fetchBooks()
       setModalOpen(false)
-    } catch {
-      if (editingLibro) {
-        setLibros(libros.map((l) => l.id === editingLibro.id ? { ...l, ...form, year: Number(form.year) } : l))
-      } else {
-        setLibros([...libros, { id: Date.now(), ...form, year: Number(form.year), estado: "disponible" }])
-      }
-      toast(editingLibro ? "Actualizado (modo demo)" : "Agregado (modo demo)", "info")
-      setModalOpen(false)
+    } catch (err) {
+      toast(err.message || "Error al guardar", "error")
     } finally {
       setSaving(false)
     }
@@ -128,13 +125,14 @@ export default function Libros() {
     { key: "titulo", label: "Título" },
     { key: "autor", label: "Autor" },
     { key: "categoria", label: "Categoría" },
-    { key: "year", label: "Año" },
+    { key: "anio", label: "Año" },
+    { key: "stock", label: "Stock" },
     {
-      key: "estado",
+      key: "disponible",
       label: "Estado",
       render: (val) => (
-        <Badge variant={val === "disponible" ? "success" : "warning"}>
-          {val?.charAt(0).toUpperCase() + val?.slice(1)}
+        <Badge variant={val !== false ? "success" : "warning"}>
+          {val !== false ? "Disponible" : "No disponible"}
         </Badge>
       ),
     },
@@ -146,7 +144,7 @@ export default function Libros() {
           <button onClick={() => openEdit(row)} className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors cursor-pointer" title="Editar">
             <MdEdit className="text-lg" />
           </button>
-          <button onClick={() => confirmDelete(row.id)} className="p-1.5 rounded-lg hover:bg-peligro-100 text-peligro-600 transition-colors cursor-pointer" title="Eliminar">
+          <button onClick={() => confirmDelete(row._id || row.id)} className="p-1.5 rounded-lg hover:bg-peligro-100 text-peligro-600 transition-colors cursor-pointer" title="Eliminar">
             <MdDelete className="text-lg" />
           </button>
         </div>
@@ -186,7 +184,7 @@ export default function Libros() {
             <input type="text" value={form.autor} onChange={(e) => setForm({ ...form, autor: e.target.value })} className={fieldClass("autor")} />
             {formErrors.autor && <p className="text-xs text-peligro-600 mt-1">{formErrors.autor}</p>}
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-madera-700 mb-1">Categoría</label>
               <select value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} className={fieldClass("categoria")}>
@@ -197,14 +195,13 @@ export default function Libros() {
             </div>
             <div>
               <label className="block text-sm font-medium text-madera-700 mb-1">Año</label>
-              <input type="number" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className={fieldClass("year")} />
-              {formErrors.year && <p className="text-xs text-peligro-600 mt-1">{formErrors.year}</p>}
+              <input type="number" value={form.anio} onChange={(e) => setForm({ ...form, anio: e.target.value })} className={fieldClass("anio")} />
+              {formErrors.anio && <p className="text-xs text-peligro-600 mt-1">{formErrors.anio}</p>}
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-madera-700 mb-1">ISBN</label>
-            <input type="text" value={form.isbn} onChange={(e) => setForm({ ...form, isbn: e.target.value })} className={fieldClass("isbn")} />
-            {formErrors.isbn && <p className="text-xs text-peligro-600 mt-1">{formErrors.isbn}</p>}
+            <div>
+              <label className="block text-sm font-medium text-madera-700 mb-1">Stock</label>
+              <input type="number" min="0" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className={fieldClass("stock")} />
+            </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)} type="button">Cancelar</Button>

@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react"
-import { MdBarChart, MdCategory, MdAutoAwesome, MdSummarize, MdRefresh } from "react-icons/md"
+import { MdBarChart, MdCategory, MdAutoAwesome, MdSummarize, MdRefresh, MdBook } from "react-icons/md"
 import Card from "../components/Card"
 import Button from "../components/Button"
 import { SkeletonCard, SkeletonBarChart } from "../components/Skeleton"
 import { statsApi } from "../services/api"
-import { mockStatistics, mockCategories, mockSummary } from "../services/mockEstadisticas"
+import { useToast } from "../components/Toast"
 
 const categorias = ["Novela", "Clásico", "Cuento", "Fábula", "Poesía", "Ensayo"]
 
-function BarChart({ data, maxVal }) {
+function BarChart({ data, maxVal, labelKey, valueKey }) {
   return (
     <div className="space-y-3">
       {data.map((item, i) => (
         <div key={i} className="space-y-1">
           <div className="flex justify-between text-sm">
-            <span className="text-madera-700 font-medium">{item.categoria || item.titulo}</span>
-            <span className="text-madera-500 font-semibold">{item.totalPrestamos}</span>
+            <span className="text-madera-700 font-medium">{item[labelKey]}</span>
+            <span className="text-madera-500 font-semibold">{item[valueKey]}</span>
           </div>
           <div className="w-full h-3 bg-madera-200 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-bosque-600 to-bosque-500 rounded-full transition-all duration-700"
-              style={{ width: `${(item.totalPrestamos / maxVal) * 100}%` }}
+              style={{ width: `${maxVal > 0 ? (item[valueKey] / maxVal) * 100 : 0}%` }}
             />
           </div>
         </div>
@@ -49,27 +49,26 @@ export default function Estadisticas() {
   const [categories, setCategories] = useState(null)
   const [summary, setSummary] = useState(null)
   const [recommendations, setRecommendations] = useState([])
+  const [latestBooks, setLatestBooks] = useState([])
   const [selectedCategory, setSelectedCategory] = useState("Novela")
   const [loading, setLoading] = useState(true)
-  const [useMock, setUseMock] = useState(false)
+  const toast = useToast()
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [stats, cats, sum] = await Promise.all([
-        statsApi.getStatistics(),
-        statsApi.getStatisticsByCategory(),
-        statsApi.getSummary(),
+      const [statsRes, catsRes, sumRes, latestRes] = await Promise.all([
+        statsApi.getStatistics().catch(() => ({ data: [] })),
+        statsApi.getStatisticsByCategory().catch(() => ({ data: [] })),
+        statsApi.getSummary().catch(() => ({ data: {} })),
+        statsApi.getLatest(5).catch(() => ({ data: [] })),
       ])
-      setStatistics(stats)
-      setCategories(cats)
-      setSummary(sum)
-      setUseMock(false)
+      setStatistics(statsRes.data || [])
+      setCategories(catsRes.data || [])
+      setSummary(sumRes.data || {})
+      setLatestBooks(latestRes.data || [])
     } catch {
-      setStatistics(mockStatistics)
-      setCategories(mockCategories)
-      setSummary(mockSummary)
-      setUseMock(true)
+      toast("Error al cargar estadísticas", "error")
     }
     setLoading(false)
   }
@@ -77,20 +76,13 @@ export default function Estadisticas() {
   useEffect(() => { fetchData() }, [])
 
   useEffect(() => {
-    if (!useMock) {
-      statsApi.getRecommendations(selectedCategory)
-        .then(setRecommendations)
-        .catch(() => setRecommendations([]))
-    } else {
-      setRecommendations([
-        { titulo: "La Casa de los Espíritus", autor: "Isabel Allende", isbn: "978-0-06-112041-1", year: 1982 },
-        { titulo: "Crónica de una Muerte Anunciada", autor: "Gabriel García Márquez", isbn: "978-0-06-088328-8", year: 1981 },
-        { titulo: "El Amor en los Tiempos del Cólera", autor: "Gabriel García Márquez", isbn: "978-0-307-38929-4", year: 1985 },
-      ])
-    }
-  }, [selectedCategory, useMock])
+    statsApi.getRecommendations(selectedCategory)
+      .then((res) => setRecommendations(res.data || []))
+      .catch(() => setRecommendations([]))
+  }, [selectedCategory])
 
-  const maxCat = categories ? Math.max(...categories.map(c => c.totalPrestamos)) : 1
+  const maxCat = categories ? Math.max(...categories.map(c => c.totalPrestamos || 0)) : 1
+  const s = summary || {}
 
   return (
     <div className="space-y-8">
@@ -99,16 +91,9 @@ export default function Estadisticas() {
           <h1 className="text-3xl font-display font-bold text-madera-900">Estadísticas y Recomendaciones</h1>
           <p className="text-madera-500 mt-1">Información general de la biblioteca</p>
         </div>
-        <div className="flex items-center gap-3">
-          {useMock && (
-            <span className="text-xs bg-peligro-100 text-peligro-600 px-3 py-1 rounded-full font-medium">
-              Datos de demostración
-            </span>
-          )}
-          <Button variant="ghost" icon={MdRefresh} onClick={fetchData}>
-            Actualizar
-          </Button>
-        </div>
+        <Button variant="ghost" icon={MdRefresh} onClick={fetchData}>
+          Actualizar
+        </Button>
       </div>
 
       {/* Summary */}
@@ -116,55 +101,62 @@ export default function Estadisticas() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
-      ) : summary && (
+      ) : (
         <Card>
           <div className="flex items-center gap-2 mb-5">
             <MdSummarize className="text-xl text-bosque-600" />
             <h2 className="text-lg font-display font-bold text-madera-900">Resumen General</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <StatMini label="Total Libros" value={summary.totalLibros} color="madera" />
-            <StatMini label="Disponibles" value={summary.librosDisponibles} color="verde" />
-            <StatMini label="Prestados" value={summary.librosPrestados} color="oro" />
-            <StatMini label="Vencidos" value={summary.librosVencidos} color="peligro" />
+            <StatMini label="Total Libros" value={s.totalBooks || 0} color="madera" />
+            <StatMini label="Disponibles" value={s.availableBooks || 0} color="verde" />
+            <StatMini label="Préstamos Totales" value={s.totalLoans || 0} color="oro" />
+            <StatMini label="Devoluciones" value={s.totalReturns || 0} color="peligro" />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-            <StatMini label="Usuarios" value={summary.totalUsuarios} color="madera" />
-            <StatMini label="Préstamos este mes" value={summary.prestamosMes} color="verde" />
-            <StatMini label="Devueltos hoy" value={summary.devueltosHoy} color="verde" />
+            <StatMini label="Préstamos Activos" value={s.activeLoans || 0} color="verde" />
+            <StatMini label="Préstamos Devueltos" value={s.returnedLoans || 0} color="madera" />
+            <StatMini label="Categorías" value={s.totalCategories || 0} color="madera" />
           </div>
         </Card>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Most borrowed */}
-        {loading ? (
-          <Card><SkeletonBarChart bars={5} /></Card>
-        ) : statistics && (
-          <Card>
-            <div className="flex items-center gap-2 mb-5">
-              <MdBarChart className="text-xl text-bosque-600" />
-              <h2 className="text-lg font-display font-bold text-madera-900">Libros Más Prestados</h2>
-            </div>
-            <BarChart
-              data={statistics.librosMasPrestados}
-              maxVal={Math.max(...statistics.librosMasPrestados.map(l => l.totalPrestamos))}
-            />
-          </Card>
-        )}
-
         {/* Categories */}
         {loading ? (
           <Card><SkeletonBarChart bars={5} /></Card>
-        ) : categories && (
+        ) : categories.length > 0 ? (
           <Card>
             <div className="flex items-center gap-2 mb-5">
               <MdCategory className="text-xl text-bosque-600" />
               <h2 className="text-lg font-display font-bold text-madera-900">Préstamos por Categoría</h2>
             </div>
-            <BarChart data={categories} maxVal={maxCat} />
+            <BarChart data={categories} maxVal={maxCat} labelKey="_id" valueKey="totalPrestamos" />
           </Card>
-        )}
+        ) : null}
+
+        {/* Latest books */}
+        {loading ? (
+          <Card><SkeletonBarChart bars={5} /></Card>
+        ) : latestBooks.length > 0 ? (
+          <Card>
+            <div className="flex items-center gap-2 mb-5">
+              <MdBook className="text-xl text-bosque-600" />
+              <h2 className="text-lg font-display font-bold text-madera-900">Últimos Libros Agregados</h2>
+            </div>
+            <div className="space-y-3">
+              {latestBooks.map((libro, i) => (
+                <div key={i} className="flex items-start gap-3 pb-3 border-b border-madera-200 last:border-0">
+                  <div className="w-2 h-2 rounded-full bg-bosque-500 mt-2 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-madera-700">{libro.titulo}</p>
+                    <p className="text-xs text-madera-400 mt-0.5">{libro.autor} — {libro.categoria} ({libro.anio})</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        ) : null}
       </div>
 
       {/* Recommendations */}
@@ -200,8 +192,8 @@ export default function Estadisticas() {
                 <h3 className="font-semibold text-madera-900">{rec.titulo}</h3>
                 <p className="text-sm text-madera-500 mt-1">{rec.autor}</p>
                 <div className="flex items-center gap-3 mt-3 text-xs text-madera-400">
-                  <span>ISBN: {rec.isbn}</span>
-                  <span>{rec.year}</span>
+                  <span>{rec.categoria}</span>
+                  <span>{rec.anio}</span>
                 </div>
               </div>
             ))}
