@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@theme {
+  --color-madera-900: #3E2723;
+  --color-madera-800: #4E342E;
+  --color-madera-700: #5D4037;
+  --color-madera-600: #6D4C41;
+  --color-madera-500: #8D6E63;
+  --color-madera-400: #A1887F;
+  --color-madera-300: #BCAAA4;
+  --color-madera-200: #D7CCC8;
+  --color-madera-100: #EFEBE9;
+
+  --color-bosque-700: #2E7D32;
+  --color-bosque-600: #388E3C;
+  --color-bosque-500: #43A047;
+  --color-bosque-100: #C8E6C9;
+
+  --color-pergamino-50: #FFFDE7;
+  --color-pergamino-100: #FFF8E1;
+  --color-pergamino-200: #FFF3E0;
+
+  --color-peligro-600: #D32F2F;
+  --color-peligro-100: #FFCDD2;
+
+  --font-display: "Georgia", "Times New Roman", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-pergamino-100);
+  color: #1B1410;
+}
+
+.bg-wood-texture {
+  background: linear-gradient(
+    135deg,
+    var(--color-madera-900) 0%,
+    var(--color-madera-800) 25%,
+    var(--color-madera-700) 50%,
+    var(--color-madera-800) 75%,
+    var(--color-madera-900) 100%
+  );
+}
+
+.bg-header {
+  background: linear-gradient(
+    90deg,
+    var(--color-madera-900) 0%,
+    var(--color-madera-800) 40%,
+    var(--color-madera-700) 70%,
+    var(--color-madera-800) 100%
+  );
+}
+
+.bg-sidebar {
+  background: linear-gradient(
+    180deg,
+    var(--color-madera-800) 0%,
+    var(--color-madera-900) 100%
+  );
+}
+
+.bg-login {
+  background: radial-gradient(
+    ellipse at center,
+    var(--color-madera-700) 0%,
+    var(--color-madera-800) 40%,
+    var(--color-madera-900) 100%
+  );
+}
+
+.bg-wood-card {
+  background: linear-gradient(
+    160deg,
+    var(--color-pergamino-50) 0%,
+    var(--color-pergamino-100) 60%,
+    var(--color-pergamino-200) 100%
+  );
+}
+
+.shadow-warm {
+  box-shadow: 0 4px 20px rgba(62, 39, 35, 0.25);
+}
+
+.shadow-warm-sm {
+  box-shadow: 0 2px 8px rgba(62, 39, 35, 0.15);
+}
+
+.border-wood {
+  border: 1px solid var(--color-madera-300);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-pergamino-200);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-madera-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-madera-500);
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}

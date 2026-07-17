@@ -1,0 +1,15 @@
+{
+  "name": "biblioteca-app-microservicios",
+  "version": "1.0.0",
+  "description": "BibliotecaApp - Microservicios divididos en Servicio A (Biblioteca) y Servicio B (Estadísticas)",
+  "type": "module",
+  "scripts": {
+    "start:a": "cd servicio-a-biblioteca && node index.js",
+    "start:b": "cd servicio-b-estadisticas && node index.js",
+    "dev:a": "cd servicio-a-biblioteca && nodemon index.js",
+    "dev:b": "cd servicio-b-estadisticas && nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
