@@ -14,7 +14,7 @@ export default function Table({ columns, data }) {
         <tbody>
           {data.map((row, index) => (
             <tr
-              key={row.id}
+              key={row._id || row.id}
               className={`border-b border-madera-200 transition-colors hover:bg-madera-100/50 ${
                 index % 2 === 0 ? "bg-pergamino-50" : "bg-pergamino-100"
               }`}

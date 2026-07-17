@@ -4,7 +4,6 @@ import Layout from "./components/Layout"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Login from "./pages/Login"
 import Registro from "./pages/Registro"
-import VerificarEmail from "./pages/VerificarEmail"
 import Dashboard from "./pages/Dashboard"
 import Libros from "./pages/Libros"
 import Prestamos from "./pages/Prestamos"
@@ -18,8 +17,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/verify-email" element={<VerificarEmail />} />
-          <Route element={<ProtectedRoute />}>
+            <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/libros" element={<Libros />} />
