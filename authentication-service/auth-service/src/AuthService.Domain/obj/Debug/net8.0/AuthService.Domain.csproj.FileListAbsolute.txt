@@ -48,3 +48,15 @@ C:\GestionBancario\authentication-service\auth-service\src\AuthService.Domain\ob
 C:\GestionBancario\.build\auth\Debug\net8.0\AuthService.Domain.deps.json
 C:\GestionBancario\.build\auth\Debug\net8.0\AuthService.Domain.dll
 C:\GestionBancario\.build\auth\Debug\net8.0\AuthService.Domain.pdb
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\bin\Debug\net8.0\AuthService.Domain.deps.json
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\bin\Debug\net8.0\AuthService.Domain.dll
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\bin\Debug\net8.0\AuthService.Domain.pdb
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\AuthService.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\AuthService.Domain.AssemblyInfoInputs.cache
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\AuthService.Domain.AssemblyInfo.cs
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\AuthService.Domain.csproj.CoreCompileInputs.cache
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\AuthService.Domain.sourcelink.json
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\AuthService.Domain.dll
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\refint\AuthService.Domain.dll
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\AuthService.Domain.pdb
+C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Domain\obj\Debug\net8.0\ref\AuthService.Domain.dll

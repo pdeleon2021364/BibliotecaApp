@@ -1,0 +1,121 @@
+[2026-07-17 09:11:00 INF] Checking database connection... {"SourceContext":"Program"}
+[2026-07-17 09:11:02 INF] Database ready. Running seed data... {"SourceContext":"Program"}
+[2026-07-17 09:11:03 INF] Database initialization completed successfully {"SourceContext":"Program"}
+[2026-07-17 09:11:03 INF] AuthService API is running at http://localhost:5156. Health endpoint: http://localhost:5156/health {"SourceContext":"Program"}
+[2026-07-17 09:16:38 INF] HTTP POST /api/v1/Auth/logout responded 401 in 78.2059 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAH:00000004","ConnectionId":"0HNN42OTSPGAH"}
+[2026-07-17 09:16:41 INF] HTTP POST /api/v1/Auth/logout responded 401 in 6.8272 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAH:00000005","ConnectionId":"0HNN42OTSPGAH"}
+[2026-07-17 09:16:57 INF] User string registered successfully {"EventId":{"Id":1001,"Name":"LogUserRegistered"},"SourceContext":"AuthService.Application.Services.AuthService","ActionId":"6389456a-6275-46ba-a77b-2c8c420e1c1f","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42OTSPGAH:00000006","RequestPath":"/api/v1/Auth/register","ConnectionId":"0HNN42OTSPGAH"}
+[2026-07-17 09:16:58 ERR] SMTP authentication failed. Check credentials. {"SourceContext":"AuthService.Application.Services.EmailService","ActionId":"6389456a-6275-46ba-a77b-2c8c420e1c1f","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42OTSPGAH:00000006","RequestPath":"/api/v1/Auth/register","ConnectionId":"0HNN42OTSPGAH"}
+MailKit.Security.AuthenticationException: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 416
+[2026-07-17 09:16:58 ERR] Failed to send email with provider smtp {"SourceContext":"AuthService.Application.Services.EmailService","ActionId":"6389456a-6275-46ba-a77b-2c8c420e1c1f","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42OTSPGAH:00000006","RequestPath":"/api/v1/Auth/register","ConnectionId":"0HNN42OTSPGAH"}
+System.InvalidOperationException: SMTP authentication failed: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp. Please check credentials.
+ ---> MailKit.Security.AuthenticationException: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 416
+   --- End of inner exception stack trace ---
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 431
+   at AuthService.Application.Services.EmailService.SendEmailAsync(String to, String subject, String body) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 288
+[2026-07-17 09:16:58 ERR] Failed to send verification email {"SourceContext":"AuthService.Application.Services.AuthService","ActionId":"6389456a-6275-46ba-a77b-2c8c420e1c1f","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42OTSPGAH:00000006","RequestPath":"/api/v1/Auth/register","ConnectionId":"0HNN42OTSPGAH"}
+System.InvalidOperationException: Failed to send email: SMTP authentication failed: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp. Please check credentials.
+ ---> System.InvalidOperationException: SMTP authentication failed: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp. Please check credentials.
+ ---> MailKit.Security.AuthenticationException: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-9077871d06csm19174146d6.43 - gsmtp
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 416
+   --- End of inner exception stack trace ---
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 431
+   at AuthService.Application.Services.EmailService.SendEmailAsync(String to, String subject, String body) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 288
+   --- End of inner exception stack trace ---
+   at AuthService.Application.Services.EmailService.SendEmailAsync(String to, String subject, String body) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 317
+   at AuthService.Application.Services.EmailService.SendEmailVerificationAsync(String email, String username, String token) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 52
+   at AuthService.Application.Services.AuthService.RegisterAsync(RegisterDto registerDto) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\AuthService.cs:line 138
+[2026-07-17 09:16:58 INF] HTTP POST /api/v1/Auth/register responded 201 in 3295.8679 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAH:00000006","ConnectionId":"0HNN42OTSPGAH"}
+[2026-07-17 09:19:08 INF] HTTP POST /api/v1/Auth/register
+ responded 404 in 0.1684 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAL:00000001","ConnectionId":"0HNN42OTSPGAL"}
+[2026-07-17 09:19:20 INF] HTTP POST /api/v1/Auth/register
+ responded 404 in 0.2259 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAL:00000002","ConnectionId":"0HNN42OTSPGAL"}
+[2026-07-17 09:20:41 INF] HTTP POST /api/v1/Auth/register
+ responded 404 in 0.1861 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAL:00000003","ConnectionId":"0HNN42OTSPGAL"}
+[2026-07-17 09:20:43 INF] HTTP POST /api/v1/auth/register responded 400 in 37.1738 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAM:00000001","ConnectionId":"0HNN42OTSPGAM"}
+[2026-07-17 09:21:18 INF] HTTP POST /api/v1/Auth/register
+ responded 404 in 0.1340 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42OTSPGAL:00000004","ConnectionId":"0HNN42OTSPGAL"}
+[2026-07-17 09:23:15 INF] Checking database connection... {"SourceContext":"Program"}
+[2026-07-17 09:23:17 INF] Database ready. Running seed data... {"SourceContext":"Program"}
+[2026-07-17 09:23:17 INF] Database initialization completed successfully {"SourceContext":"Program"}
+[2026-07-17 09:23:17 INF] AuthService API is running at http://localhost:5156. Health endpoint: http://localhost:5156/health {"SourceContext":"Program"}
+[2026-07-17 09:27:52 INF] User juanperez registered successfully {"EventId":{"Id":1001,"Name":"LogUserRegistered"},"SourceContext":"AuthService.Application.Services.AuthService","ActionId":"02ae5469-6008-40b9-ac75-02f99464c714","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42VRCCTCM:00000001","RequestPath":"/api/v1/auth/register","ConnectionId":"0HNN42VRCCTCM"}
+[2026-07-17 09:27:54 ERR] SMTP authentication failed. Check credentials. {"SourceContext":"AuthService.Application.Services.EmailService","ActionId":"02ae5469-6008-40b9-ac75-02f99464c714","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42VRCCTCM:00000001","RequestPath":"/api/v1/auth/register","ConnectionId":"0HNN42VRCCTCM"}
+MailKit.Security.AuthenticationException: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 416
+[2026-07-17 09:27:54 ERR] Failed to send email with provider smtp {"SourceContext":"AuthService.Application.Services.EmailService","ActionId":"02ae5469-6008-40b9-ac75-02f99464c714","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42VRCCTCM:00000001","RequestPath":"/api/v1/auth/register","ConnectionId":"0HNN42VRCCTCM"}
+System.InvalidOperationException: SMTP authentication failed: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp. Please check credentials.
+ ---> MailKit.Security.AuthenticationException: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 416
+   --- End of inner exception stack trace ---
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 431
+   at AuthService.Application.Services.EmailService.SendEmailAsync(String to, String subject, String body) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 288
+[2026-07-17 09:27:54 ERR] Failed to send verification email {"SourceContext":"AuthService.Application.Services.AuthService","ActionId":"02ae5469-6008-40b9-ac75-02f99464c714","ActionName":"AuthService.Api.Controllers.AuthController.Register (AuthService.Api)","RequestId":"0HNN42VRCCTCM:00000001","RequestPath":"/api/v1/auth/register","ConnectionId":"0HNN42VRCCTCM"}
+System.InvalidOperationException: Failed to send email: SMTP authentication failed: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp. Please check credentials.
+ ---> System.InvalidOperationException: SMTP authentication failed: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp. Please check credentials.
+ ---> MailKit.Security.AuthenticationException: 534: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.9 Please log in with your web browser and then try again. For more
+5.7.9 information, go to
+5.7.9  https://support.google.com/mail/?p=WebLoginRequired 6a1803df08f44-907785839f9sm19101696d6.18 - gsmtp
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 416
+   --- End of inner exception stack trace ---
+   at AuthService.Application.Services.EmailService.SendEmailWithSmtpAsync(String to, String subject, String body, IConfigurationSection smtpSettings, String fromEmail, String fromName) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 431
+   at AuthService.Application.Services.EmailService.SendEmailAsync(String to, String subject, String body) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 288
+   --- End of inner exception stack trace ---
+   at AuthService.Application.Services.EmailService.SendEmailAsync(String to, String subject, String body) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 317
+   at AuthService.Application.Services.EmailService.SendEmailVerificationAsync(String email, String username, String token) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\EmailService.cs:line 52
+   at AuthService.Application.Services.AuthService.RegisterAsync(RegisterDto registerDto) in C:\BibliotecaApp\authentication-service\auth-service\src\AuthService.Application\Services\AuthService.cs:line 138
+[2026-07-17 09:27:54 INF] HTTP POST /api/v1/auth/register responded 201 in 3292.5236 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN42VRCCTCM:00000001","ConnectionId":"0HNN42VRCCTCM"}
