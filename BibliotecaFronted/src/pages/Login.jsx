@@ -26,8 +26,12 @@ export default function Login() {
 
     setLoading(true)
     try {
-      const res = await login({ emailOrUsername: form.email, password: form.password })
-      if (res.accessToken) saveTokens(res.accessToken, res.refreshToken)
+      const res = await login({ correo: form.email, contrasena: form.password })
+      if (res.token) {
+        saveTokens(res.token)
+        localStorage.setItem("userRol", res.rol)
+        localStorage.setItem("userName", res.nombre)
+      }
       navigate("/")
     } catch (err) {
       setServerError(err.message || "Credenciales inválidas")

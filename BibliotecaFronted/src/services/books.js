@@ -1,7 +1,7 @@
 import { booksApi } from "./api"
 
-export function getBooks(search) {
-  return booksApi.getAll(search)
+export function getBooks(params) {
+  return booksApi.getAll(params)
 }
 
 export function getBook(id) {

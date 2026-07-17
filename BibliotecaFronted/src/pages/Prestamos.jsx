@@ -8,9 +8,8 @@ import Badge from "../components/Badge"
 import Modal from "../components/Modal"
 import { SkeletonTable } from "../components/Skeleton"
 import { useToast } from "../components/Toast"
-import { createLoan, returnBook } from "../services/loans"
+import { getMyLoans, createLoan, returnBook } from "../services/loans"
 import { getBooks } from "../services/books"
-import { prestamos as initialPrestamos, libros as mockLibros } from "../data/mockData"
 
 export default function Prestamos() {
   const [search, setSearch] = useState("")
@@ -19,51 +18,52 @@ export default function Prestamos() {
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({ libro: "", usuario: "", fechaPrestamo: "", fechaDevolucion: "" })
+  const [form, setForm] = useState({ libroId: "", fechaDevolucionEstimada: "" })
   const [formErrors, setFormErrors] = useState({})
   const toast = useToast()
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      try {
-        const booksData = await getBooks()
-        setLibros(Array.isArray(booksData) ? booksData : booksData.libros || [])
-      } catch {
-        setLibros(mockLibros)
-      }
-      setPrestamos(initialPrestamos)
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [loansRes, booksRes] = await Promise.all([
+        getMyLoans({ limit: 100 }),
+        getBooks({ limit: 100, disponible: "true" }),
+      ])
+      setPrestamos(loansRes.data || [])
+      setLibros(booksRes.data || [])
+    } catch {
+      setPrestamos([])
+      setLibros([])
+    } finally {
       setLoading(false)
     }
-    load()
-  }, [])
+  }
+
+  useEffect(() => { fetchData() }, [])
 
   const validateForm = () => {
     const errs = {}
-    if (!form.libro) errs.libro = "Selecciona un libro"
-    if (!form.usuario.trim()) errs.usuario = "El nombre del usuario es obligatorio"
-    if (!form.fechaPrestamo) errs.fechaPrestamo = "Obligatorio"
-    if (!form.fechaDevolucion) errs.fechaDevolucion = "Obligatorio"
-    else if (form.fechaPrestamo && form.fechaDevolucion <= form.fechaPrestamo) errs.fechaDevolucion = "Debe ser posterior al préstamo"
+    if (!form.libroId) errs.libroId = "Selecciona un libro"
+    if (!form.fechaDevolucionEstimada) errs.fechaDevolucionEstimada = "Obligatorio"
     setFormErrors(errs)
     return Object.keys(errs).length === 0
   }
 
   const filteredPrestamos = prestamos.filter(
-    (p) =>
-      p.libro?.toLowerCase().includes(search.toLowerCase()) ||
-      p.usuario?.toLowerCase().includes(search.toLowerCase()) ||
-      p.estado?.toLowerCase().includes(search.toLowerCase())
+    (p) => {
+      const titulo = p.libroId?.titulo?.toLowerCase() || ""
+      const estado = p.estado?.toLowerCase() || ""
+      return titulo.includes(search.toLowerCase()) || estado.includes(search.toLowerCase())
+    }
   )
 
-  const handleDevolver = async (id) => {
+  const handleDevolver = async (prestamoId) => {
     try {
-      await returnBook({ prestamoId: id })
-      setPrestamos(prestamos.map((p) => p.id === id ? { ...p, estado: "devuelto" } : p))
+      await returnBook({ prestamoId })
       toast("Devolución registrada correctamente", "success")
-    } catch {
-      setPrestamos(prestamos.map((p) => p.id === id ? { ...p, estado: "devuelto" } : p))
-      toast("Devolución registrada (modo demo)", "info")
+      fetchData()
+    } catch (err) {
+      toast(err.message || "Error al devolver", "error")
     }
   }
 
@@ -73,17 +73,19 @@ export default function Prestamos() {
 
     setSaving(true)
     try {
-      await createLoan(form)
-      setPrestamos([...prestamos, { id: Date.now(), ...form, estado: "activo" }])
+      await createLoan({
+        libroId: form.libroId,
+        fechaDevolucionEstimada: form.fechaDevolucionEstimada,
+      })
       toast("Préstamo registrado correctamente", "success")
-    } catch {
-      setPrestamos([...prestamos, { id: Date.now(), ...form, estado: "activo" }])
-      toast("Préstamo registrado (modo demo)", "info")
+      setModalOpen(false)
+      setForm({ libroId: "", fechaDevolucionEstimada: "" })
+      setFormErrors({})
+      fetchData()
+    } catch (err) {
+      toast(err.message || "Error al crear préstamo", "error")
     } finally {
       setSaving(false)
-      setModalOpen(false)
-      setForm({ libro: "", usuario: "", fechaPrestamo: "", fechaDevolucion: "" })
-      setFormErrors({})
     }
   }
 
@@ -96,16 +98,36 @@ export default function Prestamos() {
     switch (estado) {
       case "activo": return "warning"
       case "devuelto": return "success"
-      case "vencido": return "danger"
       default: return "info"
     }
   }
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ""
+    return new Date(dateStr).toLocaleDateString("es-GT")
+  }
+
   const columns = [
-    { key: "libro", label: "Libro" },
-    { key: "usuario", label: "Usuario" },
-    { key: "fechaPrestamo", label: "Fecha Préstamo" },
-    { key: "fechaDevolucion", label: "Fecha Devolución" },
+    {
+      key: "libroId",
+      label: "Libro",
+      render: (val) => val?.titulo || "N/A",
+    },
+    {
+      key: "usuarioId",
+      label: "Usuario",
+      render: (val) => val?.nombre || "N/A",
+    },
+    {
+      key: "fechaPrestamo",
+      label: "Fecha Préstamo",
+      render: (val) => formatDate(val),
+    },
+    {
+      key: "fechaDevolucionEstimada",
+      label: "Fecha Devolución",
+      render: (val) => formatDate(val),
+    },
     {
       key: "estado",
       label: "Estado",
@@ -122,7 +144,7 @@ export default function Prestamos() {
         <div className="flex items-center gap-2">
           {row.estado === "activo" && (
             <button
-              onClick={() => handleDevolver(row.id)}
+              onClick={() => handleDevolver(row._id)}
               className="p-1.5 rounded-lg hover:bg-bosque-100 text-bosque-700 transition-colors cursor-pointer"
               title="Devolver"
             >
@@ -143,7 +165,7 @@ export default function Prestamos() {
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="w-full sm:w-80">
-          <SearchBar value={search} onChange={setSearch} placeholder="Buscar por libro, usuario o estado..." />
+          <SearchBar value={search} onChange={setSearch} placeholder="Buscar por libro o estado..." />
         </div>
         <Button variant="accent" icon={MdAdd} onClick={() => setModalOpen(true)}>
           Nuevo Préstamo
@@ -158,36 +180,23 @@ export default function Prestamos() {
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-madera-700 mb-1">Libro</label>
-            <select value={form.libro} onChange={(e) => setForm({ ...form, libro: e.target.value })} className={fieldClass("libro")}>
+            <select value={form.libroId} onChange={(e) => setForm({ ...form, libroId: e.target.value })} className={fieldClass("libroId")}>
               <option value="">Seleccionar libro...</option>
-              {libros.filter((l) => l.estado === "disponible").map((l) => (
-                <option key={l.id} value={l.titulo}>{l.titulo}</option>
+              {libros.map((l) => (
+                <option key={l._id} value={l._id}>{l.titulo} - {l.autor}</option>
               ))}
             </select>
-            {formErrors.libro && <p className="text-xs text-peligro-600 mt-1">{formErrors.libro}</p>}
+            {formErrors.libroId && <p className="text-xs text-peligro-600 mt-1">{formErrors.libroId}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-madera-700 mb-1">Usuario</label>
+            <label className="block text-sm font-medium text-madera-700 mb-1">Fecha Devolución Estimada</label>
             <input
-              type="text"
-              value={form.usuario}
-              onChange={(e) => setForm({ ...form, usuario: e.target.value })}
-              placeholder="Nombre del usuario"
-              className={fieldClass("usuario")}
+              type="date"
+              value={form.fechaDevolucionEstimada}
+              onChange={(e) => setForm({ ...form, fechaDevolucionEstimada: e.target.value })}
+              className={fieldClass("fechaDevolucionEstimada")}
             />
-            {formErrors.usuario && <p className="text-xs text-peligro-600 mt-1">{formErrors.usuario}</p>}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-madera-700 mb-1">Fecha Préstamo</label>
-              <input type="date" value={form.fechaPrestamo} onChange={(e) => setForm({ ...form, fechaPrestamo: e.target.value })} className={fieldClass("fechaPrestamo")} />
-              {formErrors.fechaPrestamo && <p className="text-xs text-peligro-600 mt-1">{formErrors.fechaPrestamo}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-madera-700 mb-1">Fecha Devolución</label>
-              <input type="date" value={form.fechaDevolucion} onChange={(e) => setForm({ ...form, fechaDevolucion: e.target.value })} className={fieldClass("fechaDevolucion")} />
-              {formErrors.fechaDevolucion && <p className="text-xs text-peligro-600 mt-1">{formErrors.fechaDevolucion}</p>}
-            </div>
+            {formErrors.fechaDevolucionEstimada && <p className="text-xs text-peligro-600 mt-1">{formErrors.fechaDevolucionEstimada}</p>}
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)} type="button">Cancelar</Button>
