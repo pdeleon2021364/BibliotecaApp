@@ -41,7 +41,9 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
             {
                 StatusCode = (int)HttpStatusCode.Unauthorized,
                 Title = "Unauthorized",
-                Detail = "Credenciales inválidas o permisos insuficientes"
+                Detail = exception.Message == "User account is disabled"
+                    ? "Tu cuenta no está activa. Verifica tu correo electrónico para activarla."
+                    : "Credenciales inválidas o permisos insuficientes"
             },
             ArgumentException argEx => new ErrorResponse
             {
