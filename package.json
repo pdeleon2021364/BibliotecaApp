@@ -4,10 +4,11 @@
   "description": "BibliotecaApp - Microservicios divididos en Servicio A (Biblioteca) y Servicio B (Estadísticas)",
   "type": "module",
   "scripts": {
-    "start:a": "cd servicio-a-biblioteca && node index.js",
-    "start:b": "cd servicio-b-estadisticas && node index.js",
-    "dev:a": "cd servicio-a-biblioteca && nodemon index.js",
-    "dev:b": "cd servicio-b-estadisticas && nodemon index.js"
+    "dev": "concurrently -n auth,biblioteca,estadistica,frontend -c blue,green,yellow,magenta \"pnpm --filter auth-node dev\" \"cd ServiceBiblioteca && npm run dev\" \"cd ServiceEstadistica && npm run dev\" \"cd BibliotecaFronted && npm run dev\"",
+    "start": "concurrently -n auth,biblioteca,estadistica,frontend -c blue,green,yellow,magenta \"pnpm --filter auth-node start\" \"cd ServiceBiblioteca && npm start\" \"cd ServiceEstadistica && npm start\" \"cd BibliotecaFronted && npm run preview\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   },
   "keywords": [],
   "author": "",
