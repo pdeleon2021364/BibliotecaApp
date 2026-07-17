@@ -1,0 +1,446 @@
+{
+  "info": {
+    "name": "KinalSports Auth Service - .NET",
+    "description": "Colección completa de endpoints del servicio de autenticación (.NET).\n\nBase URL: http://localhost:5156\nSwagger: http://localhost:5156/swagger\n\nFlujo:\n1. Health → verificar que el servicio corre\n2. Register → crear usuario (multipart/form-data)\n3. Verify Email → activar la cuenta\n4. Login → obtener tokens\n5. Usar accessToken en header Authorization: Bearer ...\n6. Refresh → renovar tokens\n7. Logout → cerrar sesión (requiere auth)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5156" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "verificationToken", "value": "" },
+    { "key": "passwordResetToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/v1/health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/v1/auth/register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try {",
+                  "  if (pm.response.code >= 200 && pm.response.code < 300 && pm.response.text()) {",
+                  "    var j = JSON.parse(pm.response.text());",
+                  "    if (j.userId) { pm.collectionVariables.set('userId', j.userId); }",
+                  "    if (j.emailVerificationToken) { pm.collectionVariables.set('verificationToken', j.emailVerificationToken); }",
+                  "  }",
+                  "} catch(e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Juan", "type": "text" },
+                { "key": "surname", "value": "Perez", "type": "text" },
+                { "key": "username", "value": "juanperez", "type": "text" },
+                { "key": "email", "value": "juan.perez@test.com", "type": "text" },
+                { "key": "password", "value": "Test1234!", "type": "text" },
+                { "key": "phone", "value": "55551234", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try {",
+                  "  if (pm.response.code >= 200 && pm.response.code < 300 && pm.response.text()) {",
+                  "    var j = JSON.parse(pm.response.text());",
+                  "    if (j.accessToken) { pm.collectionVariables.set('accessToken', j.accessToken); }",
+                  "    if (j.refreshToken) { pm.collectionVariables.set('refreshToken', j.refreshToken); }",
+                  "  }",
+                  "} catch(e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailOrUsername\": \"juan.perez@test.com\",\n  \"password\": \"Test1234!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/verify-email",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "verify-email"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{verificationToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /api/v1/auth/verify-email?token=...",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-email?token={{verificationToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "verify-email"],
+              "query": [
+                { "key": "token", "value": "{{verificationToken}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/resend-verification",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/resend-verification",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "resend-verification"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@test.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/forgot-password",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "forgot-password"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@test.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/reset-password",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "reset-password"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{passwordResetToken}}\",\n  \"newPassword\": \"NuevaPass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try {",
+                  "  if (pm.response.code >= 200 && pm.response.code < 300 && pm.response.text()) {",
+                  "    var j = JSON.parse(pm.response.text());",
+                  "    if (j.accessToken) { pm.collectionVariables.set('accessToken', j.accessToken); }",
+                  "    if (j.refreshToken) { pm.collectionVariables.set('refreshToken', j.refreshToken); }",
+                  "  }",
+                  "} catch(e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/logout",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile (Auth)",
+      "item": [
+        {
+          "name": "GET /api/v1/auth/profile",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "PUT /api/v1/auth/profile",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "profile"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Juan\",\n  \"surname\": \"Perez\",\n  \"email\": \"juan.perez@test.com\",\n  \"phone\": \"55551234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/profile/avatar",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/profile/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "profile", "avatar"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "profilePicture", "type": "file" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /api/v1/auth/profile/avatar",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/profile/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "profile", "avatar"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/profile/by-id",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/profile/by-id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "profile", "by-id"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth Users (Admin)",
+      "item": [
+        {
+          "name": "GET /api/v1/auth/users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/v1/auth/users/{userId}",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "PUT /api/v1/auth/users/{userId}",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users", "{{userId}}"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Juan\",\n  \"surname\": \"Perez\",\n  \"email\": \"juan.perez@test.com\",\n  \"phone\": \"55551234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /api/v1/auth/users/{userId}",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users", "{{userId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Roles (Admin)",
+      "item": [
+        {
+          "name": "PUT /api/v1/users/{userId}/role",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{userId}}/role",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "{{userId}}", "role"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleName\": \"USER_ROLE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /api/v1/users/{userId}/roles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{userId}}/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "{{userId}}", "roles"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/v1/users/by-role/{roleName}",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/by-role/USER_ROLE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "by-role", "USER_ROLE"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
